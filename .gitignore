@@ -2,3 +2,6 @@
 __pycache__
 photos
 config.py
+
+# dotenv environment variables file
+.env

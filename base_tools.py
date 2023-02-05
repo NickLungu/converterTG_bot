@@ -1,20 +1,28 @@
 import psycopg2
 import time
 from datetime import datetime, timezone
-from config import *
+import os
 
 
 # Connect to db on google cloud
 def connection():
+    """
+        :rtype: database connection
+        :return: database connection
+    """
     conn = psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD)
+        host=os.getenv('DB_HOST'),
+        database=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'))
     return conn
 
 
-def insert(data_):
+def insert_image_data(data_):
+    """
+        insert data into database "images" table
+        :param data_: list [image path on the server, message id]
+    """
     try:
         conn = connection()
         cursor = conn.cursor()
@@ -31,7 +39,11 @@ def insert(data_):
         print("Cannot insert," + str(e))
 
 
-def insert_command(data_):
+def insert_command_data(data_):
+    """
+        insert data into database "commands" table
+        :param data_: list [image path on the server, message id]
+    """
     try:
         conn = connection()
         cursor = conn.cursor()
@@ -53,6 +65,13 @@ def insert_command(data_):
 
 
 def get_last_image(chat_id):
+    """
+        :param chat_id: chat id
+        :type chat_id: int
+
+        :rtype: string
+        :return: return path to last image from user on server
+    """
     path = ""
     try:
         conn = connection()
@@ -74,6 +93,13 @@ def get_last_image(chat_id):
 
 
 def get_last_command(chat_id):
+    """
+        :param chat_id: chat id
+        :type chat_id: int
+
+        :rtype: string
+        :return: return path to last command from user on server
+    """
     try:
         conn = connection()
         cursor = conn.cursor()
@@ -84,7 +110,6 @@ def get_last_command(chat_id):
                              % str(chat_id)
         cursor.execute(postgres_get_query)
         record = cursor.fetchall()
-        conn.commit()
         cursor.close()
         conn.close()
         command_name = record[0]
@@ -95,6 +120,14 @@ def get_last_command(chat_id):
 
 
 def update_is_on_server(chat_id, img_path):
+    """
+        mark in the database that the image has been removed from the server
+        :param chat_id: chat id
+        :type chat_id: int
+
+        :param img_path: images path on server
+        :type img_path: string
+    """
     try:
         conn = connection()
         cursor = conn.cursor()
@@ -106,10 +139,17 @@ def update_is_on_server(chat_id, img_path):
         conn.close()
     except Exception as e:
         print(e)
-        return "noway"
 
 
 def update_is_done(chat_id, command_name):
+    """
+        mark in the database that the command has been completed
+        :param chat_id: chat id
+        :type chat_id: int
+
+        :param command_name: command name to update
+        :type command_name: string
+    """
     try:
         conn = connection()
         cursor = conn.cursor()
@@ -120,4 +160,3 @@ def update_is_done(chat_id, command_name):
         conn.close()
     except Exception as e:
         print(e)
-        return "noway"

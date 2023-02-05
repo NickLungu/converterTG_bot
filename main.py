@@ -11,13 +11,15 @@ from PIL import Image
 import io
 import os
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import logging
-from config import TOKEN
 
 logging.basicConfig(level=logging.INFO)
 
 
-bot = Bot(token=TOKEN)
+bot = Bot(token=os.getenv('TELEGRAM_TOKEN'))
 dp = Dispatcher(bot)
 
 
@@ -81,7 +83,7 @@ async def search(message):
     commands_list = ["search", "resize", "convert"]
     for i,j in zip(replies_list, commands_list):
         if message.text.split(' ')[0][1:] == j:
-            insert_command([message.chat.id, j, False])
+            insert_command_data([message.chat.id, j, False])
             await bot.send_message(message.chat.id, i)
 
 
@@ -121,7 +123,7 @@ async def photo_processing(message):
         img = Image.open(downloaded_file)
         path_of_image_on_server = f"./{file_path[:-4]}_{str(message.chat.id)}.{str(img.format)}"
         img.save(path_of_image_on_server)
-        insert([path_of_image_on_server, message.chat.id])
+        insert_image_data([path_of_image_on_server, message.chat.id])
 
     if command_name == "resize":
         reply_message_resize = "Now send the photo change ratio (in coefficient z) " \

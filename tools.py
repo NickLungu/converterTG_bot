@@ -12,7 +12,7 @@ def resize_image(input_file, request):
         :type input_file: string
 
         :param request: request from user (resizing argument)
-        :type input_file: string
+        :type request: string
 
         :rtype: tuple (Boolean, pillow image) or (Boolean, string)
         :return: resized image or error description
@@ -52,7 +52,7 @@ def convert_image(input_file, new_format):
         :type input_file: string
 
         :param new_format: request from user (format for convert)
-        :type input_file: string
+        :type new_format: string
 
         :rtype: (file object, string)
         :return: file with converted image, new image's path
